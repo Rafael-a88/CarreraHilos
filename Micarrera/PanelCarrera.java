@@ -20,7 +20,7 @@ public class PanelCarrera extends JFrame {
         setIconImage(new ImageIcon("moto1.png").getImage());
 
         // Panel de fondo
-        FondoPanel panelFondo = new FondoPanel("fondo.png");
+        FondoPanel panelFondo = new FondoPanel("Circuito.png");
         panelFondo.setLayout(null);
         setContentPane(panelFondo);
 
@@ -34,21 +34,25 @@ public class PanelCarrera extends JFrame {
 
             JLabel etiquetaMoto = new JLabel(iconoEscalado);
 
-            // Ajustar la posición vertical de las motos
-            int yPos = i * 150;
-            if (i == 0 || i == 1) {
-                yPos += 90; // Posición para motos 1 y 2
-            } else {
-                yPos += 100; // Posición para motos 3 y 4
+            // Ajustar la posición vertical de las motos manualmente
+            int yPos;
+            switch (i) {
+                case 0: yPos = 250; break; // Posición para la moto 1
+                case 1: yPos = 350; break; // Posición para la moto 2
+                case 2: yPos = 450; break; // Posición para la moto 3
+                case 3: yPos = 550; break; // Posición para la moto 4
+                default: yPos = 0; // Valor por defecto (no debería alcanzarse)
             }
 
-            int xPos = 30;
+            int xPos = 30; // Puedes ajustar este valor si deseas mover las motos horizontalmente
             etiquetaMoto.setBounds(xPos, yPos, 100, 80); // Ajustar el tamaño del JLabel al tamaño de la imagen
             panelFondo.add(etiquetaMoto);
 
             Moto moto = new Moto("Moto " + (i + 1), (int) (Math.random() * 10) + 1, distanciaTotal, etiquetaMoto);
             carrera.agregarMoto(moto);
         }
+
+
 
         JButton botonIniciar = new JButton("Iniciar Carrera");
         botonIniciar.setBounds(500, 700, 150, 30); // Ajustar la posición del botón de inicio
@@ -82,9 +86,20 @@ class FondoPanel extends JPanel {
     public FondoPanel(String rutaImagen) {
         try {
             BufferedImage imagenOriginal = ImageIO.read(new File(rutaImagen));
-            // Escalar la imagen al tamaño del JFrame
-            imagenFondo = imagenOriginal.getScaledInstance(Toolkit.getDefaultToolkit().getScreenSize().width,
-                    Toolkit.getDefaultToolkit().getScreenSize().height, Image.SCALE_SMOOTH);
+
+            // Obtener el tamaño de la pantalla
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+            // Calcular nuevas dimensiones
+            int nuevoAncho = (int)(screenSize.width * 1.05);  // 105% del ancho de pantalla
+            int nuevoAlto = (int)(screenSize.height * 0.7);  // 70% del alto de pantalla
+
+            // Escalar la imagen a las nuevas dimensiones
+            imagenFondo = imagenOriginal.getScaledInstance(
+                    nuevoAncho,
+                    nuevoAlto,
+                    Image.SCALE_SMOOTH
+            );
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,7 +109,12 @@ class FondoPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (imagenFondo != null) {
-            g.drawImage(imagenFondo, 0, 0, this); // Dibujar la imagen de fondo
+            // Centrar la imagen
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int x = (screenSize.width - imagenFondo.getWidth(this)) / 2;
+            int y = (screenSize.height - imagenFondo.getHeight(this)) / 2 - 50;
+
+            g.drawImage(imagenFondo, x, y, this);
         }
     }
 }
